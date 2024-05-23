@@ -1,0 +1,30 @@
+inputs:
+  input:
+    type: string
+    default: Once you've created a DeepL API account and located your authentication
+      key, you're ready to make your first request. Let's start with text
+      translation.
+outputs:
+  result:
+    type: string
+    reference: ${llm_evaluate.output}
+nodes:
+- name: python_translate
+  type: python
+  source:
+    type: code
+    path: python_translate.py
+  inputs:
+    user_input: ${inputs.input}
+- name: llm_evaluate
+  type: llm
+  source:
+    type: code
+    path: llm_evaluate.jinja2
+  inputs:
+    model: gpt-4
+    temperature: 0.8
+    translation: ${python_translate.output}
+    original_text: ${inputs.input}
+  connection: kacper-test
+  api: chat
